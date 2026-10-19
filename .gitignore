@@ -3,3 +3,4 @@
 firmware/.vscode/c_cpp_properties.json
 firmware/.vscode/launch.json
 firmware/.vscode/ipch/
+api/database.local.php
