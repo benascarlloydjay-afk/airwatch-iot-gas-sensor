@@ -1,0 +1,844 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4f6f2" />
+    <title>AN IoT-BASED GAS SENSOR AND ENVIRONMENT MONITORING SYSTEM</title>
+    <link rel="stylesheet" href="style.css?v=33" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <section
+      class="login-screen"
+      id="login-screen"
+      aria-labelledby="login-title"
+    >
+      <aside class="login-intro" aria-labelledby="intro-title">
+        <p class="eyebrow">AirWatch · Environment monitoring</p>
+        <h2 id="intro-title">Know what’s happening in your environment.</h2>
+        <p class="intro-copy">
+          AirWatch brings gas, temperature, and humidity readings together in
+          one clear dashboard, helping you spot changes and understand sensor
+          activity.
+        </p>
+        <ul class="intro-features">
+          <li>
+            <span class="intro-icon" aria-hidden="true">01</span>
+            <span><strong>Track sensor readings</strong><small>MQ-2 gas levels and DHT22 temperature and humidity</small></span>
+          </li>
+          <li>
+            <span class="intro-icon" aria-hidden="true">02</span>
+            <span><strong>See changes clearly</strong><small>Charts, saved readings, and alerts in one place</small></span>
+          </li>
+          <li>
+            <span class="intro-icon" aria-hidden="true">03</span>
+            <span><strong>Explore the station</strong><small>Interactive 3D model with smoke, heat, and moisture effects</small></span>
+          </li>
+        </ul>
+        <p class="intro-caption">A sensor monitoring project built around Arduino Uno.</p>
+      </aside>
+      <div class="login-card">
+        <div class="login-brand">
+          <span class="logo"
+            ><svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M12 21s7-3.7 7-10V5l-7-3-7 3v6c0 6.3 7 10 7 10Z" />
+              <path d="M8 12.5c1.3-1.8 2.5-1.8 4 0s2.7 1.8 4 0" /></svg></span
+          >AirWatch
+        </div>
+        <p class="eyebrow">IoT sensor station</p>
+        <h1 id="login-title">Welcome back</h1>
+        <p class="login-copy" id="login-copy">
+          Sign in to open the environment monitoring dashboard.
+        </p>
+        <form class="login-form" id="login-form">
+          <label class="login-field" for="login-email"
+            >Email address<input
+              id="login-email"
+              name="email"
+              type="email"
+              autocomplete="username"
+              placeholder="you@example.com"
+              required
+          /></label>
+          <div class="login-field">
+            <label for="login-password">Password</label>
+            <div class="password-input-wrap">
+              <input
+                id="login-password"
+                name="password"
+                type="password"
+                autocomplete="current-password"
+                placeholder="Enter your password"
+                minlength="8"
+                required
+              />
+              <button
+                class="password-toggle"
+                id="password-toggle"
+                type="button"
+                aria-controls="login-password"
+                aria-label="Show password"
+                aria-pressed="false"
+                title="Show password"
+              >
+                <svg
+                  class="eye-open"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z"
+                  />
+                  <circle cx="12" cy="12" r="2.5" />
+                </svg>
+                <svg
+                  class="eye-closed"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                  hidden
+                >
+                  <path
+                    d="M3 3l18 18M10.6 6.2A10.7 10.7 0 0 1 12 6c6.1 0 9.5 6 9.5 6a15 15 0 0 1-3.2 3.8M6.2 6.8C3.8 8.4 2.5 12 2.5 12s3.4 6 9.5 6a10 10 0 0 0 3.3-.6"
+                  />
+                  <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="login-field" id="confirm-field" hidden>
+            <label for="login-confirm">Confirm password</label>
+            <div class="password-input-wrap">
+              <input
+                id="login-confirm"
+                name="confirm_password"
+                type="password"
+                autocomplete="new-password"
+                placeholder="Enter your password again"
+              />
+              <button
+                class="password-toggle"
+                id="confirm-password-toggle"
+                type="button"
+                aria-controls="login-confirm"
+                aria-label="Show confirm password"
+                aria-pressed="false"
+                title="Show confirm password"
+              >
+                <svg
+                  class="eye-open"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z"
+                  />
+                  <circle cx="12" cy="12" r="2.5" />
+                </svg>
+                <svg
+                  class="eye-closed"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                  hidden
+                >
+                  <path
+                    d="M3 3l18 18M10.6 6.2A10.7 10.7 0 0 1 12 6c6.1 0 9.5 6 9.5 6a15 15 0 0 1-3.2 3.8M6.2 6.8C3.8 8.4 2.5 12 2.5 12s3.4 6 9.5 6a10 10 0 0 0 3.3-.6"
+                  />
+                  <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <p
+            class="login-error"
+            id="login-error"
+            role="status"
+            aria-live="polite"
+          ></p>
+          <button class="btn primary" id="login-submit" type="submit">
+            Sign in
+          </button>
+        </form>
+        <p class="auth-switch" id="auth-switch">
+          New to AIRWATCH?
+          <button type="button" id="mode-toggle">Create an account</button>
+        </p>
+        <p class="login-note">
+          <strong>Account security:</strong> Passwords are hashed before they
+          are stored in the database.
+        </p>
+      </div>
+    </section>
+    <div class="layout" id="dashboard" hidden>
+      <header class="topbar">
+        <div class="brand">
+          <span class="logo"
+            ><svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M12 21s7-3.7 7-10V5l-7-3-7 3v6c0 6.3 7 10 7 10Z" />
+              <path d="M8 12.5c1.3-1.8 2.5-1.8 4 0s2.7 1.8 4 0" /></svg></span
+          >AirWatch
+        </div>
+        <div class="topright">
+          <span class="live"
+            ><i class="dot" id="live-dot"></i
+            ><span id="mode-label">Simulation ready</span></span
+          ><span class="time" id="clock">--:--:--</span
+          ><span class="time" id="account-email"></span
+          ><button
+            class="btn theme-toggle"
+            id="theme-toggle"
+            type="button"
+            aria-label="Switch to dark mode"
+            aria-pressed="false"
+          >
+            <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+            </svg>
+            <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20.5 15.5A8.5 8.5 0 0 1 8.5 3.5 8.5 8.5 0 1 0 20.5 15.5Z" />
+            </svg></button
+          ><button class="btn logout" id="logout" type="button">
+            Sign out
+          </button>
+        </div>
+      </header>
+      <div
+        class="sensor-toast-stack"
+        id="notification-toasts"
+        aria-live="polite"
+        aria-relevant="additions"
+      ></div>
+      <main>
+        <section class="heading">
+          <div>
+            <p class="project-title">
+              AN IoT-BASED GAS SENSOR AND ENVIRONMENT MONITORING SYSTEM
+            </p>
+            <p class="sub">
+              Sensor dashboard · Arduino Uno · MQ-2 · DHT22
+            </p>
+          </div>
+          <div class="actions">
+            <button class="btn" id="reset">Reset values</button>
+            <details class="help-tip">
+              <summary aria-label="Help: reset values">?</summary>
+              <span class="help-copy">
+                Reset returns the demo sliders and gas threshold to their starting
+                values. It does not erase saved database readings.
+              </span>
+            </details>
+          </div>
+        </section>
+        <div class="notice">
+          <strong>Simulation controls:</strong> These modes change virtual
+          readings on this page for testing. They do not change the physical
+          DHT22 or MQ-2 sensor output. The chart and saved records capture each
+          sensor's highest reading in every 10-second window.
+        </div>
+        <section class="metrics" aria-label="Current readings">
+          <article class="metric" style="--tone: #c28032; --wash: #fff2df">
+            <div class="metric-top">
+              <div class="metric-label">
+                <span class="icon"
+                  ><svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                  >
+                    <path d="M14 14.8V5a3 3 0 0 0-6 0v9.8a5 5 0 1 0 6 0Z" />
+                    <path d="M11 11v7" /></svg></span
+                >Temperature
+              </div>
+              <span class="badge">DHT22</span>
+            </div>
+            <div class="reading">
+              <span class="number" id="temperature">24.0</span
+              ><span class="unit">°C</span>
+            </div>
+            <div class="metric-foot">
+              <span>Comfort 18–26 °C · Alert ≥45 °C</span
+              ><span class="state" id="temp-state">In range</span>
+            </div>
+          </article>
+          <article class="metric" style="--tone: #4e8ba0; --wash: #e7f2f5">
+            <div class="metric-top">
+              <div class="metric-label">
+                <span class="icon"
+                  ><svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M12 3s7 7.2 7 12a7 7 0 0 1-14 0c0-4.8 7-12 7-12Z"
+                    />
+                    <path d="M9 16c.5 1.2 1.4 1.8 2.8 1.8" /></svg></span
+                >Humidity
+              </div>
+              <span class="badge">DHT22</span>
+            </div>
+            <div class="reading humidity-reading">
+              <span class="number" id="humidity">45.000</span
+              ><span class="unit">%</span>
+            </div>
+            <div class="metric-foot">
+              <span>Typical 30–60% · Alert ≥70%</span
+              ><span class="state" id="humidity-state">In range</span>
+            </div>
+          </article>
+          <article class="metric" style="--tone: #8674ad; --wash: #efebf6">
+            <div class="metric-top">
+              <div class="metric-label">
+                <span class="icon"
+                  ><svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M4 17h2l2-5 3 3 3-8 2 6h4" />
+                    <path d="M4 21h16" /></svg></span
+                >Gas level
+              </div>
+              <span class="badge">MQ-2 · raw</span>
+            </div>
+            <div class="reading">
+              <span class="number" id="gas">318</span
+              ><span class="unit">ADC</span>
+            </div>
+            <div class="metric-foot">
+              <span>Analog input A0</span
+              ><span class="state" id="gas-state">Normal</span>
+            </div>
+          </article>
+        </section>
+        <section class="content">
+          <article class="panel history-chart history-panel" id="history-panel" data-metric="temperature">
+            <div class="panelhead">
+              <div>
+                <h2 id="history-chart-title">Temperature history</h2>
+                <p id="history-chart-description">Peak temperature in each 10-second window</p>
+              </div>
+              <div class="help-endpoint">
+                <span class="tag" id="history-chart-value">24.0 °C</span>
+                <details class="help-tip">
+                  <summary aria-label="Help: reading history chart">?</summary>
+                  <span class="help-copy">
+                    Choose Temperature, Humidity, or Gas below to change the chart.
+                    It plots the highest value for each sensor in the latest 12
+                    10-second windows.
+                  </span>
+                </details>
+              </div>
+            </div>
+            <div class="chart-selection" role="group" aria-label="Choose chart reading">
+              <button class="chart-select is-active" type="button" data-chart-select="temperature" aria-pressed="true">Temperature</button>
+              <button class="chart-select" type="button" data-chart-select="humidity" aria-pressed="false">Humidity</button>
+              <button class="chart-select" type="button" data-chart-select="gas" aria-pressed="false">Gas</button>
+            </div>
+            <div class="chartbox">
+              <svg viewBox="0 0 560 180" preserveAspectRatio="none" role="img" id="history-chart-svg" aria-label="Temperature history chart">
+                <defs>
+                  <linearGradient id="history-area" x1="0" x2="0" y1="0" y2="1">
+                    <stop id="history-gradient-start" offset="0" stop-color="#45a67d" stop-opacity=".22" />
+                    <stop id="history-gradient-end" offset="1" stop-color="#45a67d" stop-opacity="0" />
+                  </linearGradient>
+                </defs>
+                <path class="gridline" d="M0 25H560M0 65H560M0 105H560M0 145H560" />
+                <path class="fill" id="history-area-path" d="M0 110L560 110L560 170L0 170Z" />
+                <path class="line" id="history-line-path" d="M0 110L560 110" />
+                <circle class="point" id="history-chart-point" cx="560" cy="110" r="4" />
+              </svg>
+              <div class="axis"><span>12 windows ago</span><span>Latest window</span></div>
+            </div>
+          </article>
+          <aside class="panel controlpanel">
+            <div class="controlhead">
+              <h2>Virtual sensor controls</h2>
+              <span class="sim-badge"><i></i>SIMULATED</span>
+            </div>
+            <p class="controlintro">
+              Choose how the simulated readings should be controlled.
+            </p>
+            <div class="reading-mode">
+              <div class="help-label-row">
+                <span class="controlname">Reading mode</span>
+                <details class="help-tip">
+                  <summary aria-label="Help: reading modes">?</summary>
+                  <span class="help-copy">
+                    For Demo lets you set readings with the sliders. Automatic demo
+                    updates them every 1.2 seconds and can trigger simulated alerts.
+                    Neither mode changes the physical sensors.
+                  </span>
+                </details>
+              </div>
+              <div class="mode-options" role="group" aria-label="Reading mode">
+                <button
+                  class="mode-option is-active"
+                  id="mode-manual"
+                  type="button"
+                  aria-pressed="true"
+                >For Demo</button>
+                <button
+                  class="mode-option"
+                  id="auto"
+                  type="button"
+                  aria-pressed="false"
+                >Automatic demo</button>
+              </div>
+              <p class="mode-help" id="mode-help">
+                Set readings with the sliders for a demo.
+              </p>
+            </div>
+            <div class="control">
+              <div class="controltop">
+                <label class="controlname" for="temp-control">Temperature</label
+                ><span class="control-output-group">
+                  <output class="controlvalue" id="temp-output">24.0 °C</output>
+                  <details class="help-tip">
+                    <summary aria-label="Help: temperature control">?</summary>
+                    <span class="help-copy">
+                      Set the virtual DHT22 temperature. The comfort range is 18–26
+                      °C; the high-temperature alert starts at 45 °C.
+                    </span>
+                  </details>
+                </span>
+              </div>
+              <input
+                class="range"
+                id="temp-control"
+                type="range"
+                min="10"
+                max="80"
+                step="0.1"
+                value="24"
+              />
+              <div class="limits"><span>10 °C</span><span>80 °C</span></div>
+            </div>
+            <div class="control">
+              <div class="controltop">
+                <label class="controlname" for="humidity-control"
+                  >Humidity</label
+                ><span class="control-output-group">
+                  <output class="controlvalue" id="humidity-output">45.000%</output>
+                  <details class="help-tip">
+                    <summary aria-label="Help: humidity control">?</summary>
+                    <span class="help-copy">
+                      Set virtual relative humidity from 0 to 100%. The control and
+                      saved readings support three decimal places. Typical range is
+                      30–60%; the alert limit is 70%.
+                    </span>
+                  </details>
+                </span>
+              </div>
+              <input
+                class="range"
+                id="humidity-control"
+                type="range"
+                min="0"
+                max="100"
+                step="0.001"
+                value="45"
+              />
+              <div class="limits"><span>0%</span><span>100%</span></div>
+            </div>
+            <div class="control">
+              <div class="controltop">
+                <label class="controlname" for="gas-control"
+                  >MQ-2 analog value</label
+                ><span class="control-output-group">
+                  <output class="controlvalue" id="gas-output">318 ADC</output>
+                  <details class="help-tip">
+                    <summary aria-label="Help: gas sensor control">?</summary>
+                    <span class="help-copy">
+                      Set the virtual MQ-2 raw analog reading from 0 to 1023 ADC.
+                      This is not a parts-per-million measurement.
+                    </span>
+                  </details>
+                </span>
+              </div>
+              <input
+                class="range"
+                id="gas-control"
+                type="range"
+                min="0"
+                max="1023"
+                step="1"
+                value="318"
+              />
+              <div class="limits"><span>0</span><span>1023</span></div>
+              <div class="threshold-row">
+                <label for="gas-threshold">Alert when gas value reaches</label
+                ><input
+                  id="gas-threshold"
+                  type="number"
+                  min="0"
+                  max="1023"
+                  value="450"
+                />
+                <details class="help-tip">
+                  <summary aria-label="Help: gas alert threshold">?</summary>
+                  <span class="help-copy">
+                    Enter the raw ADC value that triggers the gas alert and alarm.
+                    The threshold can be set from 0 to 1023.
+                  </span>
+                </details>
+              </div>
+            </div>
+            <div class="controlactions">
+              <div class="action-with-help">
+                <button class="btn" id="quiet" type="button" aria-pressed="false">
+                  Mute alarm
+                </button>
+                <details class="help-tip">
+                  <summary aria-label="Help: mute alarm">?</summary>
+                  <span class="help-copy">
+                    Mute or restore the repeating alert sound. Visual alerts and
+                    readings continue while muted.
+                  </span>
+                </details>
+              </div>
+              <div class="action-with-help">
+                <button class="btn" id="test-alarm" type="button">Test sound</button>
+                <details class="help-tip">
+                  <summary aria-label="Help: test sound">?</summary>
+                  <span class="help-copy">
+                    Play a short sample of the gas, temperature, and humidity alert
+                    sounds. Your browser may require a click before audio can play.
+                  </span>
+                </details>
+              </div>
+              <div class="action-with-help">
+                <button class="btn" id="export">Export readings</button>
+                <details class="help-tip">
+                  <summary aria-label="Help: export readings">?</summary>
+                  <span class="help-copy">
+                    Download the current temperature, humidity, gas ADC value, and
+                    gas threshold as a CSV file.
+                  </span>
+                </details>
+              </div>
+            </div>
+            <p class="control-note">
+              MQ-2 values are raw ADC readings. PPM requires sensor calibration
+              and gas-specific conversion.
+            </p>
+          </aside>
+        </section>
+        <section class="panel saved-readings" aria-labelledby="saved-readings-title">
+          <div class="panelhead">
+            <div>
+              <h2 id="saved-readings-title">Shared 10-second peak readings</h2>
+              <p>Highest sensor readings in each 10-second window · refreshes every 10 seconds</p>
+            </div>
+            <div class="help-endpoint">
+              <span class="tag">10 per page</span>
+              <button
+                class="btn readings-expand-button"
+                id="readings-expand"
+                type="button"
+                aria-expanded="false"
+                aria-controls="saved-readings-content"
+              >
+                Expand
+              </button>
+              <details class="help-tip">
+                <summary aria-label="Help: shared readings">?</summary>
+                <span class="help-copy">
+                  Signed-in dashboard readings are saved to the database and shown
+                  here for every user. Each record stores the highest temperature,
+                  humidity, and gas reading observed during one 10-second window.
+                  Search and sorting narrow or reorder the list; Previous and Next
+                  move between pages of 10 records.
+                </span>
+              </details>
+            </div>
+          </div>
+          <div id="saved-readings-content">
+            <p
+              class="readings-save-status"
+              id="readings-save-status"
+              role="status"
+              aria-live="polite"
+            >
+              Sign in to save and view readings.
+            </p>
+            <div class="readings-tools-heading">
+              <label class="readings-search-label" for="saved-readings-search">
+                Search shared readings
+              </label>
+              <div class="readings-sort-row">
+                <label for="readings-sort">Sort by</label>
+                <select class="readings-sort" id="readings-sort">
+                  <option value="newest">Date &amp; time · newest first</option>
+                  <option value="oldest">Date &amp; time · oldest first</option>
+                  <option value="alerts">High alerts first</option>
+                  <option value="temperature">Temperature · high to low</option>
+                  <option value="humidity">Humidity · high to low</option>
+                  <option value="gas">Gas · high to low</option>
+                </select>
+              </div>
+            </div>
+            <input
+              class="readings-search"
+              id="saved-readings-search"
+              type="search"
+              placeholder="Search account, date, temperature, gas, status…"
+              autocomplete="off"
+            />
+            <div class="readings-table-wrap">
+              <table class="readings-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Recorded</th>
+                    <th scope="col">Submitted by</th>
+                    <th scope="col">Temperature</th>
+                    <th scope="col">Humidity</th>
+                    <th scope="col">Gas (ADC)</th>
+                    <th scope="col">Threshold</th>
+                    <th scope="col">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="readings-body">
+                  <tr><td colspan="7">No shared readings yet.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <nav class="readings-pagination" aria-label="Saved readings pages">
+              <button class="btn readings-page-button" id="readings-previous" type="button" disabled>
+                Previous
+              </button>
+              <span id="readings-page-label" aria-live="polite">Page 1 of 1</span>
+              <button class="btn readings-page-button" id="readings-next" type="button" disabled>
+                Next
+              </button>
+            </nav>
+          </div>
+        </section>
+        <section
+          class="panel simulation3d"
+          aria-labelledby="simulation3d-title"
+        >
+          <div class="panelhead">
+            <div>
+              <h2 id="simulation3d-title">3D sensor station</h2>
+              <p>
+                Arduino Uno, DHT22, MQ-2, I2C LCD, and four gas-level LEDs
+              </p>
+            </div>
+            <div class="help-endpoint">
+              <span class="tag">Live model</span>
+              <details class="help-tip">
+                <summary aria-label="Help: 3D sensor model">?</summary>
+                <span class="help-copy">
+                  Drag to orbit, right-drag to pan, and scroll or pinch to zoom. The
+                  model reflects virtual dashboard readings. Its gas ppm number is
+                  an estimate for display, not a calibrated measurement.
+                </span>
+              </details>
+            </div>
+          </div>
+          <div class="simulation-stage">
+            <div class="scene-view" id="scene-view">
+              <canvas
+                id="sensor-canvas"
+                aria-label="Three-dimensional Arduino sensor station with an LCD, DHT22, MQ-2, and four gas status LEDs. Drag to orbit, right-drag to pan, and scroll or pinch to zoom."
+              ></canvas>
+              <p
+                class="scene-message"
+                id="scene-message"
+                role="status"
+                aria-live="polite"
+              >
+                Loading the 3D sensor station…
+              </p>
+              <span class="scene-hint" id="scene-hint">
+                Drag to orbit · move pointer to release smoke near MQ-2
+              </span>
+            </div>
+            <aside class="hazard-controls" aria-label="3D simulation effects">
+              <div class="help-label-row">
+                <span class="controlname">Sensor effects</span>
+                <details class="help-tip">
+                  <summary aria-label="Help: 3D sensor effects">?</summary>
+                  <span class="help-copy">
+                    Choose Smoke and drag it near the MQ-2, or choose Heat or
+                    Moisture and drag it near the DHT22. The virtual sensor response
+                    changes as the effect reaches its component.
+                  </span>
+                </details>
+              </div>
+              <div class="hazard-options" role="group" aria-label="Choose effect">
+                <button class="hazard-option is-active" type="button" data-hazard="smoke" aria-pressed="true">
+                  <span aria-hidden="true">◉</span> Smoke
+                </button>
+                <button class="hazard-option" type="button" data-hazard="fire" aria-pressed="false">
+                  <span aria-hidden="true">♨</span> Heat
+                </button>
+                <button class="hazard-option" type="button" data-hazard="water" aria-pressed="false">
+                  <span aria-hidden="true">≈</span> Moisture
+                </button>
+              </div>
+              <div class="help-label-row">
+                <label class="hazard-level-label" for="smoke-level">Effect level</label>
+                <details class="help-tip">
+                  <summary aria-label="Help: effect level">?</summary>
+                  <span class="help-copy">
+                    Adjust the strength of the selected smoke, heat, or moisture
+                    effect. A stronger effect produces a stronger virtual sensor
+                    response.
+                  </span>
+                </details>
+              </div>
+              <output class="hazard-level-output" id="smoke-level-output" for="smoke-level">3</output>
+              <span class="hazard-level-hint" id="smoke-level-hint">High</span>
+              <input
+                class="range hazard-level"
+                id="smoke-level"
+                type="range"
+                min="1"
+                max="5"
+                step="1"
+                value="3"
+                aria-label="Effect level, from 1 to 5"
+                aria-describedby="smoke-level-hint"
+              />
+              <span class="hazard-level-hint">Low</span>
+            </aside>
+          </div>
+          <div class="scene-readings" aria-label="3D model readings">
+            <div class="scene-reading">
+              <span>Temperature</span
+              ><strong id="scene-temperature">24.0 °C</strong>
+            </div>
+            <div class="scene-reading">
+              <span>Humidity</span><strong id="scene-humidity">45 %</strong>
+            </div>
+            <div class="scene-reading">
+              <span>Simulated gas</span
+              ><strong id="scene-gas">3,109 ppm</strong>
+            </div>
+          </div>
+          <p class="wire-guide" aria-label="3D connection wire color key">
+            <strong>Wire key</strong>
+            <span><i class="wire-swatch wire-power"></i>5V power</span>
+            <span><i class="wire-swatch wire-ground"></i>Ground</span>
+            <span><i class="wire-swatch wire-signal"></i>MQ-2 signal</span>
+            <span><i class="wire-swatch wire-data"></i>Data / SDA</span>
+            <span><i class="wire-swatch wire-clock"></i>I²C SCL</span>
+            <span><i class="wire-swatch wire-leds"></i>LED indicators</span>
+          </p>
+          <p class="simulation-link">
+            The 3D view scales the virtual sensor value to 0–10,000 ppm for
+            display only. A real ppm reading requires gas-specific calibration.
+          </p>
+        </section>
+        <section class="panel simulation" aria-label="Wokwi Arduino circuit">
+          <div class="panelhead">
+            <div>
+              <h2>Arduino circuit</h2>
+              <p>Hosted Wokwi circuit with I2C LCD, DHT22, and MQ-2 sensors</p>
+            </div>
+            <div class="help-endpoint">
+              <details class="help-tip">
+                <summary aria-label="Help: Wokwi circuit">?</summary>
+                <span class="help-copy">
+                  This embedded Wokwi circuit runs separately from the dashboard.
+                  Change its virtual hardware controls in Wokwi; those changes do
+                  not update the dashboard or database.
+                </span>
+              </details>
+              <a
+                class="tag"
+                href="https://wokwi.com/projects/477939854804116481"
+                target="_blank"
+                rel="noopener"
+                >Open in Wokwi ↗</a
+              >
+            </div>
+          </div>
+          <iframe
+            class="simulation-frame"
+            src="https://wokwi.com/projects/477939854804116481?embed=1"
+            title="Interactive Wokwi Arduino sensor circuit"
+            loading="lazy"
+            allow="
+              accelerometer;
+              autoplay;
+              clipboard-write;
+              encrypted-media;
+              gyroscope;
+              picture-in-picture;
+            "
+            allowfullscreen
+          ></iframe>
+          <p class="simulation-link">
+            The embedded circuit runs separately from the dashboard’s virtual
+            sliders. The 3D model above also shows the four gas-level LEDs.
+            <a
+              href="https://wokwi.com/projects/477939854804116481"
+              target="_blank"
+              rel="noopener"
+              >Open the full simulator</a
+            >.
+          </p>
+        </section>
+        <footer class="footer">
+          <span>AirWatch · Interactive sensor dashboard</span
+          ><span>Changes stay in this browser session</span>
+        </footer>
+      </main>
+    </div>
+    <script src="script.js?v=44"></script>
+    <script type="module" src="simulation3d.js?v=20"></script>
+  </body>
+</html>

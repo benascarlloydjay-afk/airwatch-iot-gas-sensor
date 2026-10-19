@@ -1,0 +1,14 @@
+{
+    "folders": [
+        {
+            "path": "."
+        },
+        {
+            "name": "IoT Gas Sensor System",
+            "path": "../OneDrive/Documents/PlatformIO/Projects/IoT Gas Sensor System"
+        }
+    ],
+    "settings": {
+        "liveServer.settings.multiRootWorkspaceName": "IoT System"
+    }
+}

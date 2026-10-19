@@ -1,0 +1,1069 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4f6f2" />
+    <title>Airwatch — Sensor Dashboard</title>
+    <style>
+      :root {
+        --ink: #172b27;
+        --muted: #788781;
+        --line: #e5eae5;
+        --bg: #f4f6f2;
+        --card: #fff;
+        --green: #18745a;
+        --green2: #e5f4ed;
+        --orange: #d28a38;
+        --red: #c6574c;
+        --shadow: 0 14px 40px rgba(27, 54, 43, 0.055);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+      button,
+      input {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+      .layout {
+        max-width: 1320px;
+        margin: auto;
+        padding: 0 34px 38px;
+      }
+      .topbar {
+        height: 76px;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        font-size: 15px;
+        font-weight: 750;
+        letter-spacing: -0.04em;
+      }
+      .logo {
+        display: grid;
+        place-items: center;
+        width: 35px;
+        height: 35px;
+        background: #e4f2eb;
+        color: var(--green);
+        border-radius: 11px;
+      }
+      .logo svg {
+        width: 20px;
+      }
+      .topright {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .live {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .dot {
+        height: 8px;
+        width: 8px;
+        border-radius: 50%;
+        background: #d5a34b;
+        box-shadow: 0 0 0 4px #f7eedf;
+      }
+      .time {
+        font-variant-numeric: tabular-nums;
+      }
+      main {
+        padding-top: 36px;
+      }
+      .heading {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 23px;
+      }
+      .eyebrow {
+        margin: 0 0 8px;
+        color: var(--green);
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+      h1 {
+        margin: 0;
+        font-size: clamp(28px, 4vw, 38px);
+        letter-spacing: -0.055em;
+        line-height: 1.1;
+      }
+      .sub {
+        margin: 9px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .actions {
+        display: flex;
+        gap: 9px;
+      }
+      .btn {
+        min-height: 40px;
+        padding: 0 14px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        color: var(--ink);
+        background: #fff;
+        font-size: 11px;
+        font-weight: 700;
+        transition: 0.15s;
+      }
+      .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 5px 16px #17372d12;
+      }
+      .btn.primary {
+        background: var(--green);
+        border-color: var(--green);
+        color: #fff;
+      }
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+      .notice {
+        margin-bottom: 17px;
+        padding: 11px 14px;
+        border: 1px solid #ecd8b7;
+        border-radius: 10px;
+        background: #fff8ed;
+        color: #795d37;
+        font-size: 11px;
+        line-height: 1.55;
+      }
+      .notice strong {
+        color: #60451f;
+      }
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 15px;
+      }
+      .metric,
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 15px;
+        background: var(--card);
+        box-shadow: var(--shadow);
+      }
+      .metric {
+        position: relative;
+        overflow: hidden;
+        min-height: 166px;
+        padding: 19px 20px;
+      }
+      .metric:after {
+        position: absolute;
+        content: "";
+        width: 110px;
+        height: 110px;
+        right: -35px;
+        top: -48px;
+        border-radius: 50%;
+        background: var(--wash, #e5f4ed);
+        opacity: 0.75;
+      }
+      .metric-top {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .metric-label {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: #65766f;
+        font-size: 11px;
+        font-weight: 700;
+      }
+      .icon {
+        display: grid;
+        place-items: center;
+        width: 29px;
+        height: 29px;
+        border-radius: 9px;
+        color: var(--tone, var(--green));
+        background: var(--wash, #e5f4ed);
+      }
+      .icon svg {
+        width: 16px;
+        height: 16px;
+      }
+      .badge {
+        padding: 5px 8px;
+        border-radius: 20px;
+        background: #f0f3f0;
+        color: #7b8983;
+        font-size: 9px;
+        font-weight: 700;
+      }
+      .reading {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+        margin-top: 18px;
+      }
+      .number {
+        font-size: 43px;
+        line-height: 1;
+        font-weight: 650;
+        letter-spacing: -0.07em;
+        font-variant-numeric: tabular-nums;
+      }
+      .unit {
+        color: #84918b;
+        font-size: 14px;
+      }
+      .metric-foot {
+        position: absolute;
+        z-index: 1;
+        bottom: 15px;
+        left: 20px;
+        right: 20px;
+        padding-top: 10px;
+        border-top: 1px solid #edf0ed;
+        display: flex;
+        justify-content: space-between;
+        color: #84918b;
+        font-size: 9px;
+      }
+      .state {
+        font-weight: 750;
+        color: var(--green);
+      }
+      .state.warn {
+        color: var(--orange);
+      }
+      .state.alert {
+        color: var(--red);
+      }
+      .content {
+        display: grid;
+        grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.9fr);
+        gap: 15px;
+        margin-top: 15px;
+      }
+      .panel {
+        padding: 19px 20px;
+      }
+      .panelhead {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .panelhead h2 {
+        margin: 0;
+        font-size: 13px;
+        letter-spacing: -0.02em;
+      }
+      .panelhead p {
+        margin: 5px 0 0;
+        color: var(--muted);
+        font-size: 10px;
+      }
+      .tag {
+        padding: 5px 8px;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        color: #788781;
+        font-size: 9px;
+      }
+      .chartbox {
+        height: 191px;
+        margin-top: 15px;
+      }
+      .chartbox svg {
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+      }
+      .gridline {
+        stroke: #edf0ed;
+        stroke-width: 1;
+      }
+      .fill {
+        fill: url(#area);
+      }
+      .line {
+        fill: none;
+        stroke: var(--green);
+        stroke-width: 2.6;
+        stroke-linejoin: round;
+        stroke-linecap: round;
+      }
+      .point {
+        fill: #fff;
+        stroke: var(--green);
+        stroke-width: 2.5;
+      }
+      .axis {
+        display: flex;
+        justify-content: space-between;
+        color: #a1aaa5;
+        font-size: 9px;
+        margin-top: 3px;
+      }
+      .controlpanel {
+        grid-row: span 2;
+      }
+      .controlhead {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .controlhead h2 {
+        margin: 0;
+        font-size: 13px;
+      }
+      .sim-badge {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        padding: 6px 9px;
+        border-radius: 30px;
+        background: var(--green2);
+        color: var(--green);
+        font-size: 9px;
+        font-weight: 750;
+      }
+      .sim-badge i {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #4caa7f;
+      }
+      .controlintro {
+        margin: 8px 0 18px;
+        color: var(--muted);
+        font-size: 10px;
+        line-height: 1.5;
+      }
+      .control {
+        padding: 14px 0;
+        border-top: 1px solid #edf0ed;
+      }
+      .controltop {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 11px;
+      }
+      .controlname {
+        font-size: 11px;
+        font-weight: 700;
+      }
+      .controlvalue {
+        min-width: 61px;
+        text-align: right;
+        color: var(--green);
+        font-size: 12px;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+      }
+      .controlvalue.alert {
+        color: var(--red);
+      }
+      .range {
+        width: 100%;
+        height: 5px;
+        margin: 0;
+        appearance: none;
+        border-radius: 8px;
+        background: linear-gradient(
+          90deg,
+          var(--green) 0%,
+          var(--green) var(--pct, 40%),
+          #e7ece7 var(--pct, 40%),
+          #e7ece7 100%
+        );
+        outline: 0;
+      }
+      .range::-webkit-slider-thumb {
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        border: 3px solid #fff;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 1px 5px #163b2c40;
+      }
+      .range::-moz-range-thumb {
+        width: 11px;
+        height: 11px;
+        border: 3px solid #fff;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 1px 5px #163b2c40;
+      }
+      .limits {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 7px;
+        color: #a0aaa4;
+        font-size: 9px;
+      }
+      .threshold-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 8px;
+        color: #76847e;
+        font-size: 10px;
+      }
+      .threshold-row input {
+        width: 68px;
+        padding: 6px 7px;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        color: var(--ink);
+        background: #fff;
+        font-size: 10px;
+        text-align: right;
+      }
+      .controlactions {
+        display: flex;
+        gap: 8px;
+        margin-top: 17px;
+      }
+      .controlactions .btn {
+        flex: 1;
+        padding: 0 9px;
+      }
+      .control-note {
+        margin: 12px 0 0;
+        color: #909b95;
+        font-size: 9px;
+        line-height: 1.5;
+      }
+      .statushero {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        margin: 22px 0 17px;
+      }
+      .statusicon {
+        display: grid;
+        place-items: center;
+        width: 43px;
+        height: 43px;
+        border-radius: 13px;
+        background: var(--green2);
+        color: var(--green);
+      }
+      .statusicon svg {
+        width: 20px;
+      }
+      .statushero strong {
+        display: block;
+        font-size: 13px;
+      }
+      .statushero span {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 10px;
+      }
+      .rows {
+        border-top: 1px solid var(--line);
+      }
+      .row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #edf0ed;
+        color: #74817b;
+        font-size: 10px;
+      }
+      .row:last-child {
+        border: 0;
+      }
+      .row b {
+        color: var(--ink);
+        font-size: 10px;
+      }
+      .footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 17px;
+        color: #9ba59f;
+        font-size: 9px;
+      }
+      @media (max-width: 850px) {
+        .layout {
+          padding: 0 20px 28px;
+        }
+        .content {
+          grid-template-columns: 1fr;
+        }
+        .controlpanel {
+          grid-row: auto;
+        }
+        .metrics {
+          gap: 10px;
+        }
+        .metric {
+          padding: 16px;
+        }
+        .metric-foot {
+          left: 16px;
+          right: 16px;
+        }
+        .number {
+          font-size: 38px;
+        }
+      }
+      @media (max-width: 560px) {
+        .layout {
+          padding: 0 14px 24px;
+        }
+        .topbar {
+          height: 64px;
+        }
+        .topright {
+          gap: 9px;
+        }
+        .time {
+          display: none;
+        }
+        main {
+          padding-top: 27px;
+        }
+        .heading {
+          align-items: stretch;
+          flex-direction: column;
+        }
+        .actions .btn {
+          flex: 1;
+        }
+        .metrics {
+          grid-template-columns: 1fr;
+        }
+        .metric {
+          min-height: 150px;
+        }
+        .content {
+          margin-top: 10px;
+        }
+        .panel {
+          padding: 16px;
+        }
+        .footer {
+          flex-direction: column;
+        }
+        .number {
+          font-size: 42px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <header class="topbar">
+        <div class="brand">
+          <span class="logo"
+            ><svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M12 21s7-3.7 7-10V5l-7-3-7 3v6c0 6.3 7 10 7 10Z" />
+              <path d="M8 12.5c1.3-1.8 2.5-1.8 4 0s2.7 1.8 4 0" /></svg></span
+          >Airwatch
+        </div>
+        <div class="topright">
+          <span class="live"
+            ><i class="dot" id="live-dot"></i
+            ><span id="mode-label">Simulation ready</span></span
+          ><span class="time" id="clock">--:--:--</span>
+        </div>
+      </header>
+      <main>
+        <section class="heading">
+          <div>
+            <p class="eyebrow">IoT sensor station&nbsp; / &nbsp;Arduino Uno</p>
+            <h1>Environment dashboard</h1>
+            <p class="sub">
+              Adjust virtual sensor inputs and see the dashboard respond.
+            </p>
+          </div>
+          <div class="actions">
+            <button class="btn" id="reset">Reset values</button
+            ><button class="btn primary" id="auto">Start live demo</button>
+          </div>
+        </section>
+        <div class="notice">
+          <strong>Simulation controls:</strong> These sliders change virtual
+          readings on this page for testing. They do not change the physical
+          DHT22 or MQ-2 sensor output.
+        </div>
+        <section class="metrics" aria-label="Current readings">
+          <article class="metric" style="--tone: #c28032; --wash: #fff2df">
+            <div class="metric-top">
+              <div class="metric-label">
+                <span class="icon"
+                  ><svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                  >
+                    <path d="M14 14.8V5a3 3 0 0 0-6 0v9.8a5 5 0 1 0 6 0Z" />
+                    <path d="M11 11v7" /></svg></span
+                >Temperature
+              </div>
+              <span class="badge">DHT22</span>
+            </div>
+            <div class="reading">
+              <span class="number" id="temperature">24.0</span
+              ><span class="unit">°C</span>
+            </div>
+            <div class="metric-foot">
+              <span>Comfort range 18–26 °C</span
+              ><span class="state" id="temp-state">In range</span>
+            </div>
+          </article>
+          <article class="metric" style="--tone: #4e8ba0; --wash: #e7f2f5">
+            <div class="metric-top">
+              <div class="metric-label">
+                <span class="icon"
+                  ><svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M12 3s7 7.2 7 12a7 7 0 0 1-14 0c0-4.8 7-12 7-12Z"
+                    />
+                    <path d="M9 16c.5 1.2 1.4 1.8 2.8 1.8" /></svg></span
+                >Humidity
+              </div>
+              <span class="badge">DHT22</span>
+            </div>
+            <div class="reading">
+              <span class="number" id="humidity">45</span
+              ><span class="unit">%</span>
+            </div>
+            <div class="metric-foot">
+              <span>Typical range 30–60%</span
+              ><span class="state" id="humidity-state">In range</span>
+            </div>
+          </article>
+          <article class="metric" style="--tone: #8674ad; --wash: #efebf6">
+            <div class="metric-top">
+              <div class="metric-label">
+                <span class="icon"
+                  ><svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M4 17h2l2-5 3 3 3-8 2 6h4" />
+                    <path d="M4 21h16" /></svg></span
+                >Gas level
+              </div>
+              <span class="badge">MQ-2 · raw</span>
+            </div>
+            <div class="reading">
+              <span class="number" id="gas">318</span
+              ><span class="unit">ADC</span>
+            </div>
+            <div class="metric-foot">
+              <span>Analog input A0</span
+              ><span class="state" id="gas-state">Normal</span>
+            </div>
+          </article>
+        </section>
+        <section class="content">
+          <article class="panel">
+            <div class="panelhead">
+              <div>
+                <h2>Temperature history</h2>
+                <p>Dashboard readings update as you move the controls</p>
+              </div>
+              <span class="tag">Recent samples</span>
+            </div>
+            <div class="chartbox">
+              <svg
+                viewBox="0 0 560 180"
+                preserveAspectRatio="none"
+                aria-label="Temperature history chart"
+              >
+                <defs>
+                  <linearGradient id="area" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0" stop-color="#45a67d" stop-opacity=".22" />
+                    <stop offset="1" stop-color="#45a67d" stop-opacity="0" />
+                  </linearGradient>
+                </defs>
+                <path
+                  class="gridline"
+                  d="M0 25H560M0 65H560M0 105H560M0 145H560"
+                />
+                <path
+                  class="fill"
+                  id="area-path"
+                  d="M0 110L50 95L100 101L150 79L200 87L250 63L300 76L350 52L400 65L450 42L500 48L560 32L560 170L0 170Z"
+                />
+                <path
+                  class="line"
+                  id="line-path"
+                  d="M0 110L50 95L100 101L150 79L200 87L250 63L300 76L350 52L400 65L450 42L500 48L560 32"
+                />
+                <circle class="point" id="chart-point" cx="560" cy="32" r="4" />
+              </svg>
+              <div class="axis">
+                <span>12 samples ago</span><span>Current</span>
+              </div>
+            </div>
+          </article>
+          <aside class="panel controlpanel">
+            <div class="controlhead">
+              <h2>Virtual sensor controls</h2>
+              <span class="sim-badge"><i></i>SIMULATED</span>
+            </div>
+            <p class="controlintro">
+              Move a slider to change the reading shown above. Changes are
+              applied instantly.
+            </p>
+            <div class="control">
+              <div class="controltop">
+                <label class="controlname" for="temp-control">Temperature</label
+                ><output class="controlvalue" id="temp-output">24.0 °C</output>
+              </div>
+              <input
+                class="range"
+                id="temp-control"
+                type="range"
+                min="-10"
+                max="80"
+                step="0.1"
+                value="24"
+              />
+              <div class="limits"><span>−10 °C</span><span>80 °C</span></div>
+            </div>
+            <div class="control">
+              <div class="controltop">
+                <label class="controlname" for="humidity-control"
+                  >Humidity</label
+                ><output class="controlvalue" id="humidity-output">45 %</output>
+              </div>
+              <input
+                class="range"
+                id="humidity-control"
+                type="range"
+                min="0"
+                max="100"
+                step="1"
+                value="45"
+              />
+              <div class="limits"><span>0%</span><span>100%</span></div>
+            </div>
+            <div class="control">
+              <div class="controltop">
+                <label class="controlname" for="gas-control"
+                  >MQ-2 analog value</label
+                ><output class="controlvalue" id="gas-output">318 ADC</output>
+              </div>
+              <input
+                class="range"
+                id="gas-control"
+                type="range"
+                min="0"
+                max="1023"
+                step="1"
+                value="318"
+              />
+              <div class="limits"><span>0</span><span>1023</span></div>
+              <div class="threshold-row">
+                <label for="gas-threshold">Alert when gas value reaches</label
+                ><input
+                  id="gas-threshold"
+                  type="number"
+                  min="0"
+                  max="1023"
+                  value="650"
+                />
+              </div>
+            </div>
+            <div class="controlactions">
+              <button class="btn" id="quiet">Mute alert</button
+              ><button class="btn" id="export">Export readings</button>
+            </div>
+            <p class="control-note">
+              MQ-2 values are raw ADC readings. PPM requires sensor calibration
+              and gas-specific conversion.
+            </p>
+          </aside>
+          <article class="panel">
+            <div class="panelhead">
+              <div>
+                <h2>Station status</h2>
+                <p>Virtual Arduino Uno sensor station</p>
+              </div>
+              <span class="tag" id="status-tag">Preview</span>
+            </div>
+            <div class="statushero">
+              <div class="statusicon" id="status-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="m5 12.5 4.2 4.2L19 7" />
+                  <circle cx="12" cy="12" r="10" />
+                </svg>
+              </div>
+              <div>
+                <strong id="status-title">All readings normal</strong
+                ><span id="status-message"
+                  >Adjust a sensor control to try different conditions.</span
+                >
+              </div>
+            </div>
+            <div class="rows">
+              <div class="row"><span>Update interval</span><b>Live</b></div>
+              <div class="row">
+                <span>Last updated</span><b id="updated">Just now</b>
+              </div>
+              <div class="row">
+                <span>Gas alert threshold</span
+                ><b id="threshold-display">650 ADC</b>
+              </div>
+            </div>
+          </article>
+        </section>
+        <footer class="footer">
+          <span>Airwatch · Interactive sensor dashboard</span
+          ><span>Changes stay in this browser session</span>
+        </footer>
+      </main>
+    </div>
+    <script>
+      const el = (id) => document.getElementById(id);
+      const initial = { temperature: 24, humidity: 45, gas: 318 };
+      let values = { ...initial },
+        timer = null,
+        sampleCount = 0,
+        alertMuted = false;
+      const history = [
+        23.5, 23.8, 23.4, 24.2, 24.0, 24.7, 24.4, 25.1, 24.8, 25.4, 25.1, 24.0,
+      ];
+      const controls = [
+        el("temp-control"),
+        el("humidity-control"),
+        el("gas-control"),
+      ];
+      function updateClock() {
+        el("clock").textContent = new Intl.DateTimeFormat(undefined, {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        }).format(new Date());
+      }
+      function sliderFill(input) {
+        const pct = ((input.value - input.min) / (input.max - input.min)) * 100;
+        input.style.setProperty("--pct", `${pct}%`);
+      }
+      function addHistory(temp) {
+        history.push(temp);
+        if (history.length > 12) history.shift();
+        drawChart();
+      }
+      function drawChart() {
+        const low = Math.min(...history) - 1,
+          high = Math.max(...history) + 1;
+        const pts = history.map(
+          (v, i) =>
+            `${((i * 560) / (history.length - 1)).toFixed(1)} ${(165 - ((v - low) / (high - low || 1)) * 125).toFixed(1)}`,
+        );
+        const d = "M" + pts.join(" L");
+        el("line-path").setAttribute("d", d);
+        el("area-path").setAttribute("d", `${d} L560 170 L0 170Z`);
+        const [x, y] = pts[pts.length - 1].split(" ");
+        el("chart-point").setAttribute("cx", x);
+        el("chart-point").setAttribute("cy", y);
+      }
+      function paint() {
+        values = {
+          temperature: Number(el("temp-control").value),
+          humidity: Number(el("humidity-control").value),
+          gas: Number(el("gas-control").value),
+        };
+        el("temperature").textContent = values.temperature.toFixed(1);
+        el("humidity").textContent = String(values.humidity);
+        el("gas").textContent = String(values.gas);
+        el("temp-output").textContent = `${values.temperature.toFixed(1)} °C`;
+        el("humidity-output").textContent = `${values.humidity} %`;
+        el("gas-output").textContent = `${values.gas} ADC`;
+        controls.forEach(sliderFill);
+        const threshold = Math.max(
+          0,
+          Math.min(1023, Number(el("gas-threshold").value) || 0),
+        );
+        el("threshold-display").textContent = `${threshold} ADC`;
+        const gasHigh = values.gas >= threshold,
+          tempHigh = values.temperature > 26,
+          humidityOut = values.humidity < 30 || values.humidity > 60;
+        const tempState = el("temp-state");
+        tempState.textContent = tempHigh ? "Above range" : "In range";
+        tempState.className = "state" + (tempHigh ? " warn" : "");
+        const humState = el("humidity-state");
+        humState.textContent = humidityOut ? "Check level" : "In range";
+        humState.className = "state" + (humidityOut ? " warn" : "");
+        const gasState = el("gas-state");
+        gasState.textContent = gasHigh ? "ALERT" : "Normal";
+        gasState.className = "state" + (gasHigh ? " alert" : "");
+        el("gas-output").classList.toggle("alert", gasHigh);
+        const critical = gasHigh && !alertMuted;
+        el("status-title").textContent = critical
+          ? "Gas alert"
+          : tempHigh || humidityOut
+            ? "Check environment"
+            : "All readings normal";
+        el("status-message").textContent = critical
+          ? "The simulated MQ-2 reading is at or above the alert threshold."
+          : tempHigh || humidityOut
+            ? "One or more readings are outside the typical comfort range."
+            : "Adjust a sensor control to try different conditions.";
+        el("status-tag").textContent = critical ? "Alert" : "Preview";
+        el("status-tag").style.color = critical ? "#c6574c" : "";
+        el("status-icon").style.background = critical
+          ? "#fdecea"
+          : "var(--green2)";
+        el("status-icon").style.color = critical
+          ? "var(--red)"
+          : "var(--green)";
+        el("live-dot").style.background = critical ? "var(--red)" : "#4eaa7d";
+        el("live-dot").style.boxShadow = critical
+          ? "0 0 0 4px #fbe6e3"
+          : "0 0 0 4px #e5f4eb";
+        el("mode-label").textContent = critical
+          ? "Simulated alert"
+          : "Simulation active";
+        el("updated").textContent = new Intl.DateTimeFormat(undefined, {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        }).format(new Date());
+        addHistory(values.temperature);
+      }
+      controls.forEach((input) => input.addEventListener("input", paint));
+      el("gas-threshold").addEventListener("input", paint);
+      el("reset").addEventListener("click", () => {
+        clearInterval(timer);
+        timer = null;
+        el("auto").textContent = "Start live demo";
+        el("auto").classList.add("primary");
+        el("temp-control").value = initial.temperature;
+        el("humidity-control").value = initial.humidity;
+        el("gas-control").value = initial.gas;
+        el("gas-threshold").value = 650;
+        alertMuted = false;
+        paint();
+      });
+      el("auto").addEventListener("click", () => {
+        if (timer) {
+          clearInterval(timer);
+          timer = null;
+          el("auto").textContent = "Start live demo";
+          el("auto").classList.add("primary");
+          el("mode-label").textContent = "Simulation paused";
+          return;
+        }
+        el("auto").textContent = "Pause demo";
+        el("auto").classList.remove("primary");
+        el("mode-label").textContent = "Simulation active";
+        timer = setInterval(() => {
+          sampleCount++;
+          el("temp-control").value = (
+            24 +
+            Math.sin(sampleCount / 5) * 2.3
+          ).toFixed(1);
+          el("humidity-control").value = String(
+            Math.round(45 + Math.sin(sampleCount / 7) * 9),
+          );
+          el("gas-control").value = String(
+            Math.round(320 + Math.sin(sampleCount / 3) * 110),
+          );
+          paint();
+        }, 1200);
+      });
+      el("quiet").addEventListener("click", () => {
+        alertMuted = !alertMuted;
+        el("quiet").textContent = alertMuted ? "Unmute alert" : "Mute alert";
+        paint();
+      });
+      el("export").addEventListener("click", () => {
+        const rows = [
+          ["sensor", "value", "unit"],
+          ["temperature", values.temperature.toFixed(1), "C"],
+          ["humidity", values.humidity, "%"],
+          ["mq2_raw", values.gas, "ADC"],
+          ["gas_alert_threshold", el("gas-threshold").value, "ADC"],
+        ];
+        const csv = rows.map((r) => r.join(",")).join("\n");
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+        a.download = "airwatch-readings.csv";
+        a.click();
+        URL.revokeObjectURL(a.href);
+      });
+      paint();
+      updateClock();
+      setInterval(updateClock, 1000);
+    </script>
+  </body>
+</html>

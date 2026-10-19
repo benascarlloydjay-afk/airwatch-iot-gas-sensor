@@ -1,0 +1,38 @@
+CREATE DATABASE IF NOT EXISTS airwatch_db
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE airwatch_db;
+
+CREATE TABLE IF NOT EXISTS users (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  email VARCHAR(254) NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_users_email (email)
+) ENGINE=InnoDB
+  DEFAULT CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS sensor_readings (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id BIGINT UNSIGNED NOT NULL,
+  temperature DECIMAL(5, 2) NOT NULL,
+  humidity DECIMAL(6, 3) NOT NULL,
+  gas_adc SMALLINT UNSIGNED NOT NULL,
+  gas_threshold SMALLINT UNSIGNED NOT NULL DEFAULT 450,
+  gas_alert TINYINT(1) NOT NULL DEFAULT 0,
+  recorded_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_sensor_readings_user_time (user_id, recorded_at),
+  CONSTRAINT fk_sensor_readings_user
+    FOREIGN KEY (user_id) REFERENCES users (id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB
+  DEFAULT CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+-- Upgrade databases created with the previous two-decimal humidity column.
+ALTER TABLE sensor_readings
+  MODIFY humidity DECIMAL(6, 3) NOT NULL;
